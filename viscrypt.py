@@ -27,35 +27,61 @@ class Sheetpixel():
 
         if total_black != None:
 
+            partner_nr_black = partner.subpixels.count('x');
+
             if total_black == 4 and nr_black == 2:
 
-                for other_subpixel in partner.subpixels:
-                    if other_subpixel == 'x':
-                        self.subpixels += '.';
-                    else:
-                        self.subpixels += 'x';
-
+                if partner_nr_black == 2:
+                    for other_subpixel in partner.subpixels:
+                        if other_subpixel == 'x':
+                            self.subpixels += '.';
+                        else:
+                            self.subpixels += 'x';
+                elif partner_nr_black == 3:
+                    self.subpixels = partner.subpixels;
+                    self.subpixels = self.subpixels.replace('.','@',1);
+                    self.subpixels = self.subpixels.replace('x','.',2);
+                    self.subpixels = self.subpixels.replace('@','x',1);
+ 
             elif total_black == 2 and nr_black == 2:
 
-                self.subpixels = partner.subpixels;
+                if partner_nr_black == 2:
+                    self.subpixels = partner.subpixels;
+                elif partner_nr_black == 3:
+                    self.subpixels = partner.subpixels;
+                    self.subpixels = self.subpixels.replace('@','.',1);                                                             
 
             elif total_black == 3 and nr_black == 3:
 
-                self.subpixels = partner.subpixels;
+                if partner_nr_black == 2:
+                    self.subpixels = partner.subpixels;
+                    self.subpixels = self.subpixels.replace('.','x',1);                                                             
+                elif partner_nr_black == 3:
+                    self.subpixels = partner.subpixels;
 
             elif total_black == 3 and nr_black == 2:
 
-                self.subpixels = partner.subpixels;
-                self.subpixels = self.subpixels.replace('x','@',1);
-                self.subpixels = self.subpixels.replace('.','x',1);
-                self.subpixels = self.subpixels.replace('@','.',1);
+                if partner_nr_black == 2:
+                    self.subpixels = partner.subpixels;
+                    self.subpixels = self.subpixels.replace('x','@',1);
+                    self.subpixels = self.subpixels.replace('.','x',1);
+                    self.subpixels = self.subpixels.replace('@','.',1);
+                elif partner_nr_black == 3:
+                    self.subpixels = partner.subpixels;
+                    self.subpixels = self.subpixels.replace('x','.',1);
 
             elif total_black == 4 and nr_black == 3:
 
-                self.subpixels = partner.subpixels;
-                self.subpixels = self.subpixels.replace('.','@',1);
-                self.subpixels = self.subpixels.replace('x','.',1);
-                self.subpixels = self.subpixels.replace('@','x',1);                
+                if partner_nr_black == 2:
+                    self.subpixels = partner.subpixels;
+                    self.subpixels = self.subpixels.replace('x','@',1);
+                    self.subpixels = self.subpixels.replace('.','x',2);
+                    self.subpixels = self.subpixels.replace('@','.',1);
+                elif partner_nr_black == 3:
+                    self.subpixels = partner.subpixels;
+                    self.subpixels = self.subpixels.replace('.','@',1);
+                    self.subpixels = self.subpixels.replace('x','.',1);
+                    self.subpixels = self.subpixels.replace('@','x',1);                
             
         else:
             self.subpixels = nr_black*'x'+(self.pixelsize-nr_black)*'.';
@@ -120,7 +146,7 @@ class Sheet():
         values_to_png(path,values);
 
 
-def generate_sheets(image,cover = None):
+def generate_sheets(image,cover1 = None,cover2 = None):
 
     sheet1 = Sheet([]);
     sheet2 = Sheet([]);
@@ -134,26 +160,34 @@ def generate_sheets(image,cover = None):
 
             if imagepixel == '.':
 
-                if cover != None:
-                    if cover.pixels[nl][np] == 'x':
+                if cover1 != None:
+                    if cover1.pixels[nl][np] == 'x':
                         pixel1 = Sheetpixel(nr_black=3);
-                        pixel2 = Sheetpixel(nr_black=3,total_black=3,partner=pixel1);
-                    elif cover.pixels[nl][np] == '.':
+                    elif cover1.pixels[nl][np] == '.':
                         pixel1 = Sheetpixel(nr_black=2);
+
+                    if cover2.pixels[nl][np] == 'x':
+                        pixel2 = Sheetpixel(nr_black=3,total_black=3,partner=pixel1);
+                    elif cover2.pixels[nl][np] == '.':
                         pixel2 = Sheetpixel(nr_black=2,total_black=3,partner=pixel1);                   
+
                 else:
                     pixel1 = Sheetpixel(nr_black=2);
                     pixel2 = Sheetpixel(nr_black=2,total_black=2,partner=pixel1);
                                 
             elif imagepixel == 'x':
 
-                if cover != None:
-                    if cover.pixels[nl][np] == 'x':
+                if cover1 != None:
+                    if cover1.pixels[nl][np] == 'x':
                         pixel1 = Sheetpixel(nr_black=3);
-                        pixel2 = Sheetpixel(nr_black=3,total_black=4,partner=pixel1);
-                    elif cover.pixels[nl][np] == '.':
+                    elif cover1.pixels[nl][np] == '.':
                         pixel1 = Sheetpixel(nr_black=2);
-                        pixel2 = Sheetpixel(nr_black=2,total_black=4,partner=pixel1);                    
+
+                    if cover2.pixels[nl][np] == 'x':
+                        pixel2 = Sheetpixel(nr_black=3,total_black=4,partner=pixel1);
+                    elif cover2.pixels[nl][np] == '.':
+                        pixel2 = Sheetpixel(nr_black=2,total_black=4,partner=pixel1);                   
+                        
                 else:
                     pixel1 = Sheetpixel(nr_black=2);
                     pixel2 = Sheetpixel(nr_black=2,total_black=4,partner=pixel1);
@@ -208,7 +242,12 @@ def values_to_png(path,values):
 if __name__ == '__main__':
 
     target = Image('target');
-    cover = Image('cover');
-    sh1, sh2 = generate_sheets(target,cover=cover);
+    cover1 = Image('cover1');
+    cover2 = Image('cover2');
+    geo = Image('geocache');
+
+    sh1, sh2 = generate_sheets(target,cover1=cover1,cover2=cover2);
     sh1.save('sheet1');
     sh2.save('sheet2');
+
+# Er moet nog iets gedaan worden met plekken waar cover1 en cover2 niet hetzelfde zijn
