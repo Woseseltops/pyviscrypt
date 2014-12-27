@@ -146,57 +146,53 @@ class Sheet():
         values_to_png(path,values);
 
 
-def generate_sheets(image,cover1 = None,cover2 = None):
+def generate_sheets(target,cover1 = None,cover2 = None):
 
+    #Create the first sheet
     sheet1 = Sheet([]);
-    sheet2 = Sheet([]);
 
-    for nl, line in enumerate(image.pixels):
+    for nl, line in enumerate(cover1.pixels):
 
-        current_sheetline1 = [];
-        current_sheetline2 = [];
+        current_sheetline = [];
 
         for np, imagepixel in enumerate(line):
 
+            if imagepixel == 'x':
+                pixel = Sheetpixel(nr_black=3);
+            elif imagepixel == '.':
+                pixel = Sheetpixel(nr_black=2);
+
+            current_sheetline.append(pixel);
+
+        sheet1.pixels.append(current_sheetline);
+
+    sheet2 = Sheet([]);
+
+    for nl, line in enumerate(target.pixels):
+
+        current_sheetline = [];
+        
+        for np, imagepixel in enumerate(line):
+
+            partner_pixel = sheet1.pixels[nl][np];
+
             if imagepixel == '.':
 
-                if cover1 != None:
-                    if cover1.pixels[nl][np] == 'x':
-                        pixel1 = Sheetpixel(nr_black=3);
-                    elif cover1.pixels[nl][np] == '.':
-                        pixel1 = Sheetpixel(nr_black=2);
-
-                    if cover2.pixels[nl][np] == 'x':
-                        pixel2 = Sheetpixel(nr_black=3,total_black=3,partner=pixel1);
-                    elif cover2.pixels[nl][np] == '.':
-                        pixel2 = Sheetpixel(nr_black=2,total_black=3,partner=pixel1);                   
-
-                else:
-                    pixel1 = Sheetpixel(nr_black=2);
-                    pixel2 = Sheetpixel(nr_black=2,total_black=2,partner=pixel1);
+                if cover2.pixels[nl][np] == 'x':
+                    pixel = Sheetpixel(nr_black=3,total_black=3,partner=partner_pixel);
+                elif cover2.pixels[nl][np] == '.':
+                    pixel = Sheetpixel(nr_black=2,total_black=3,partner=partner_pixel);                   
                                 
             elif imagepixel == 'x':
 
-                if cover1 != None:
-                    if cover1.pixels[nl][np] == 'x':
-                        pixel1 = Sheetpixel(nr_black=3);
-                    elif cover1.pixels[nl][np] == '.':
-                        pixel1 = Sheetpixel(nr_black=2);
-
-                    if cover2.pixels[nl][np] == 'x':
-                        pixel2 = Sheetpixel(nr_black=3,total_black=4,partner=pixel1);
-                    elif cover2.pixels[nl][np] == '.':
-                        pixel2 = Sheetpixel(nr_black=2,total_black=4,partner=pixel1);                   
+                if cover2.pixels[nl][np] == 'x':
+                    pixel = Sheetpixel(nr_black=3,total_black=4,partner=partner_pixel);
+                elif cover2.pixels[nl][np] == '.':
+                    pixel = Sheetpixel(nr_black=2,total_black=4,partner=partner_pixel);                   
                         
-                else:
-                    pixel1 = Sheetpixel(nr_black=2);
-                    pixel2 = Sheetpixel(nr_black=2,total_black=4,partner=pixel1);
+            current_sheetline.append(pixel);
 
-            current_sheetline1.append(pixel1);
-            current_sheetline2.append(pixel2);
-
-        sheet1.pixels.append(current_sheetline1);
-        sheet2.pixels.append(current_sheetline2);
+        sheet2.pixels.append(current_sheetline);
         
     return sheet1,sheet2;
 
@@ -221,8 +217,6 @@ def png_to_str(path):
 
         string += '\n'
 
-    print(string);
-
     return string;
             
 def values_to_png(path,values):
@@ -246,7 +240,7 @@ if __name__ == '__main__':
     cover2 = Image('cover2');
     geo = Image('geocache');
 
-    sh1, sh2 = generate_sheets(target,cover1=cover1,cover2=cover2);
+    sh1, sh2 = generate_sheets(target,cover1=geo,cover2=cover2);
     sh1.save('sheet1');
     sh2.save('sheet2');
 
